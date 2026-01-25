@@ -1,12 +1,57 @@
 // Portfolio JavaScript
 document.addEventListener('DOMContentLoaded', function() {
-    // Mobile menu functionality
+    // Mobile menu functionality with enhanced UX
     const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
     const navLinks = document.querySelector('.nav-links');
+    const body = document.body;
     
     if (mobileMenuBtn && navLinks) {
-        mobileMenuBtn.addEventListener('click', function() {
-            navLinks.classList.toggle('show');
+        mobileMenuBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const isOpen = navLinks.classList.contains('show');
+            
+            if (isOpen) {
+                navLinks.classList.remove('show');
+                mobileMenuBtn.classList.remove('active');
+                mobileMenuBtn.setAttribute('aria-expanded', 'false');
+                body.style.overflow = '';
+            } else {
+                navLinks.classList.add('show');
+                mobileMenuBtn.classList.add('active');
+                mobileMenuBtn.setAttribute('aria-expanded', 'true');
+                body.style.overflow = 'hidden';
+            }
+        });
+        
+        // Close menu when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!navLinks.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                navLinks.classList.remove('show');
+                mobileMenuBtn.classList.remove('active');
+                mobileMenuBtn.setAttribute('aria-expanded', 'false');
+                body.style.overflow = '';
+            }
+        });
+        
+        // Close menu on window resize (if switching to desktop)
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                navLinks.classList.remove('show');
+                mobileMenuBtn.classList.remove('active');
+                mobileMenuBtn.setAttribute('aria-expanded', 'false');
+                body.style.overflow = '';
+            }
+        });
+        
+        // Close menu when clicking on nav links
+        const navLinkItems = navLinks.querySelectorAll('.nav-link');
+        navLinkItems.forEach(link => {
+            link.addEventListener('click', function() {
+                navLinks.classList.remove('show');
+                mobileMenuBtn.classList.remove('active');
+                mobileMenuBtn.setAttribute('aria-expanded', 'false');
+                body.style.overflow = '';
+            });
         });
     }
 
@@ -115,6 +160,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Close mobile menu if open
                 if (navLinks && navLinks.classList.contains('show')) {
                     navLinks.classList.remove('show');
+                    if (mobileMenuBtn) {
+                        mobileMenuBtn.classList.remove('active');
+                        mobileMenuBtn.setAttribute('aria-expanded', 'false');
+                    }
+                    body.style.overflow = '';
                 }
             }
         });
@@ -198,20 +248,27 @@ document.addEventListener('DOMContentLoaded', function() {
         
         .nav-links.show {
             display: flex !important;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: white;
-            flex-direction: column;
-            padding: 1rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            border-top: 1px solid #e5e7eb;
         }
         
         @media (max-width: 768px) {
             .nav-links {
                 display: none;
+            }
+        }
+        
+        /* Smooth transitions for mobile menu */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: flex;
+            }
+        }
+        
+        /* Touch feedback */
+        @media (hover: none) and (pointer: coarse) {
+            .btn:active,
+            .nav-link:active,
+            .social-link:active {
+                transform: scale(0.95);
             }
         }
     `;
